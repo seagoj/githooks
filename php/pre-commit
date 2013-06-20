@@ -1,12 +1,10 @@
 #!/usr/bin/env php
 
 <?php
-//return false;
-
-printf("%sGit pre-commit hook %1\$s", PHP_EOL);
+print PHP_EOL."Git pre-commit hook".PHP_EOL;
 $projectName = basename(getcwd());
+$log = $projectName."Test.log";
 exec('rm -R deprecated/doc');
-//exec('php-cs-fixer fix .');
 exec('phpdoc', $docOutput, $docReturnCode);
 foreach($docOutput as $line) {
     if (strpos($line, 'No ')!==false) {
@@ -15,24 +13,25 @@ foreach($docOutput as $line) {
 }
 exec('phpcs --standard=PSR2 -p *.php',$PSROutput, $PSRReturnCode);
 exec('phpunit', $testOutput, $testReturnCode);
+
 if($testReturnCode !== 0) {
-//    $minimalTestSummary = array_pop($output);
-    printf("Test suite for %s failed: ", $projectName);
-    printf("( %s ) %s%2\$s", var_export($testOutput), PHP_EOL);
-    exit(1); // exit(1)
+    print "Test suite for $projectName failed: ";
+    $output = PHP_EOL.var_export($testOutpuit, true).PHP_EOL;
+    file_put_contents($log, $output);
+    exit(1);
 } elseif($docReturnCode !== 0) {
-//    $minimalDocSummary = array_pop($docOutput);
-    printf("Comments not complete for %s", $projectName);
-    printf("( %s ) %s%2\$s", var_export($docOutput), PHP_EOL);
+    print "Comments not complete for $projectName";
+    $output = PHP_EOL.var_export($docOutput, true).PHP_EOL;
+    file_put_contents($log, $output);
     exit(1);
 } elseif ($PSRReturnCode !== 0) {
-//    $minimalPSRSummary = array_pop($PSROutput);
-    printf("%s is not PSR2 compliant", $projectName);
-    printf("( %s ) %s%2\$s", var_export($PSROutput), PHP_EOL);
+    print "$projectName is not PSR2 compliant";
+    $output = PHP_EOL.var_export($PSROutput, true).PHP_EOL;
+    file_put_contents($log, $output);
     exit(1);
 } else {
-    printf("PHPUnit: All tests for %s passed.%s%2\$s", $projectName, PHP_EOL);
-    printf("PHPDoc: All comments for %s are valid.%s%2\$s", $projectName, PHP_EOL);
-    printf("PHPCS: %s is PSR-2 compliant.%s%2\$s", $projectName, PHP_EOL);
+    print "PHPUnit: All tests for $projectName passed.".PHP_EOL
+        ."PHPDoc: All comments for $projectName are valid.".PHP_EOL
+        ."PHPCS: $projectName is PSR-2 compliant.".PHP_EOL;
     exit(0);
 }
