@@ -4,7 +4,10 @@
 print PHP_EOL."Git pre-commit hook".PHP_EOL;
 $projectName = basename(getcwd());
 $log = $projectName."Test.log";
-exec('rm -R deprecated/doc');
+
+if(is_file('deprecated/doc')) {
+    exec('rm -R deprecated/doc');
+}
 exec('phpdoc', $docOutput, $docReturnCode);
 foreach($docOutput as $line) {
     if (strpos($line, 'No ')!==false) {
