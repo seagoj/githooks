@@ -1,3 +1,0 @@
-[submodule "lib/Devtools"]
-	path = lib/Devtools
-	url = git://github.com/seagoj/devtools.git
